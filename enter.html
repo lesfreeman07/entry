@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The Ottery</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+</head>
+<body>
+    <button id="connectWallet">Connect Wallet</button>
+    <button id="enter">Enter Lottery</button>
+    <div id="customMessage">A gambler, then? Fortune favors the bold...
+        Submit your entry above.</div>
+
+    <script>
+        const ABI = [[{"inputs":[{"internalType":"address","name":"_vrfCoordinator","type":"address"},{"internalType":"address","name":"_link","type":"address"},{"internalType":"uint256","name":"_fee","type":"uint256"},{"internalType":"bytes32","name":"_keyhash","type":"bytes32"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"MIN_TOKENS_TO_ENTER","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"checkIfWon","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"counter","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"enter","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"isEntered","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"lastEnteredBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"manager","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"players","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"randomness","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"requestId","type":"bytes32"},{"internalType":"uint256","name":"randomness","type":"uint256"}],"name":"rawFulfillRandomness","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"recentWinner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_token","type":"address"}],"name":"setToken","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startLotteryManually","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"token","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"stateMutability":"payable","type":"receive"}]];
+        const contractAddress = "0x307A87d3b181921Bb19CECD69bf08d415a55622e";
+
+        let web3;
+        let userAccount;
+        let lotteryContract;
+
+        const connectWallet = async () => {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                await window.ethereum.enable();
+                const accounts = await web3.eth.getAccounts();
+                userAccount = accounts[0];
+                // Assuming you have the ABI and contract address
+                lotteryContract = new web3.eth.Contract(ABI, contractAddress);
+            } else {
+                alert('Please install MetaMask!');
+            }
+        };
+
+        const enterLottery = async () => {
+            // Check if user has enough ETH for gas
+            const balance = await web3.eth.getBalance(userAccount);
+            if (balance < web3.utils.toWei('0.01', 'ether')) {
+                alert('Insufficient ETH for gas in your wallet');
+                return;
+            }
+
+            // Show disclaimer popup
+            $('#disclaimerPopup').show();
+        };
+
+        const proceedToEnter = async () => {
+            try {
+                await lotteryContract.methods.enter().send({ from: userAccount });
+            } catch (error) {
+                console.error("Error entering lottery:", error);
+            }
+        };
+
+        $(document).ready(function() {
+            $('#connectWallet').click(connectWallet);
+            $('#enter').click(enterLottery);
+
+            $('#acknowledge').change(function() {
+                $('#proceed').prop('disabled', !this.checked);
+            });
+
+            $('#proceed').click(function() {
+                if ($('#acknowledge').is(':checked')) {
+                    $('#disclaimerPopup').hide();
+                    proceedToEnter();
+                }
+            });
+        });
+    </script>
+
+    <div id="disclaimerPopup">
+        <p><strong>Disclaimer:</strong></p>
+        <p>Please note that if you are a resident of the following countries or regions, including the United States, Iran, North Korea, Syria, Cuba, and the Crimea region of Ukraine, you are prohibited from participating in this cryptocurrency lottery due to legal restrictions in your jurisdiction.</p>
+        <p>It is your responsibility to ensure that your participation complies with local, state, and national laws in your jurisdiction. We are not responsible for any legal consequences that may arise from your participation in this lottery. If you are unsure about the legality of cryptocurrency activities in your country, please consult with a legal professional before participating.</p>
+        <p>By participating in this lottery, you acknowledge that you have read, understood, and agreed to this disclaimer.</p>
+        <input type="checkbox" id="acknowledge" name="acknowledge" value="acknowledge">
+        <label for="acknowledge"> I acknowledge</label><br>
+        <button id="proceed" disabled>Proceed</button>
+    </div>
+</body>
+</html>

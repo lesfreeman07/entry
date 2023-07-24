@@ -1,0 +1,56 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0;
+  background-image: url('https://azoxnyawg2espwsugod6tnunjcyqskvv3tlfzwy2l77byk77qtca.arweave.net/Bl124BY2iSfaVDOH6baNSLEJKrXc1lzbGl_-HCv_hMQ');
+  background-size: cover;
+  font-family: Arial, sans-serif;
+}
+
+#customMessage {
+  color: #333;
+  font-size: 1.5em;
+  text-align: center;
+  margin-bottom: 2em;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+#disclaimerPopup {
+  display: none;
+  position: fixed;
+  width: 300px;
+  height: 200px;
+  z-index: 1000;
+  top: 50%;
+  left: 50%;
+  margin: -100px 0 0 -150px;
+  background-color: #fff;
+  border: 1px solid #000;
+  padding: 15px;
+  text-align: center;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Georgia', serif;
+}
+
+#customMessage {
+  /* Add your styles here */
+  font-weight: bold;
+  color: #fffefe; /* This will change the text color */
+  font-size: 30px; /* This will change the text size */
+  /* Add more styles as needed */
+}
